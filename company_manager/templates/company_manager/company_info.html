@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
-
+    {% for person in associate %}
+        {% if person.user.is_staff == False %}
+            <a href="{% url 'person_activity' person.id %}">{{ person }}</a>
+        {% endif %}
+    {% endfor %}
 </body>
 </html>

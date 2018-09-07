@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for device in object_list %}
+        {{ device.id }}
+        <p>
+            <a href="{% url 'activity_device' device.pk %}">{{ device.name }}</a>
+            <form method="POST" action="{% url 'delete_device' device.pk %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </p>
+    {% endfor %}
+</body>
+</html>

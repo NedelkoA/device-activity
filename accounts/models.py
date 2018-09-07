@@ -16,7 +16,8 @@ class Profile(models.Model):
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        related_name='company'
     )
 
     def __str__(self):

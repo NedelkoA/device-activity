@@ -7,11 +7,6 @@ class Company(models.Model):
         max_length=255,
         unique=True
     )
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='company'
-    )
 
 
 class Invite(models.Model):

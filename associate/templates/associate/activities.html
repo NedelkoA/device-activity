@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for activity in activities %}
+        {{ activity.name }} {{ activity.device.name }}
+    {% endfor %}
+</body>
+</html>
