@@ -5,11 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-    {% for activity in activities %}
-        {% for activ in activity %}
-            {{ activ.start }}
+    <div class="filter">
+        <form method="GET">
+            {{ filter.form.as_p }}
+            <button type="submit">accept</button>
+        </form>
+    </div>
+    <p>{{ object.user.username }} activities</p>
+    <div class="activities">
+        {% for obj in filter.qs %}
+            {{ obj.start }} {{ obj.device.name }}<br>
         {% endfor %}
-    {% endfor %}
-   {{ activities }}
+    </div>
 </body>
 </html>

@@ -1,4 +1,5 @@
 from datetime import timedelta
+import logging
 
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
@@ -12,12 +13,19 @@ from .forms import RegistrationForm, TokenRegistrationForm
 from .models import User
 from company_manager.models import Invite
 
+logger = logging.getLogger('raven')
+
 
 class RegistrationView(CreateView):
     template_name = 'accounts/registration.html'
     success_url = reverse_lazy('profile')
 
     def get(self, request, *args, **kwargs):
+        logger.error('There was some crazy error', exc_info=True, extra={
+            # Optionally pass a request and we'll grab any information we can
+            'request': request,
+        })
+        # Проверка времени жизни токена
         if self.request.GET.get('token') is not None:
             invite = get_object_or_404(Invite, invite_token=self.request.GET['token'])
             current_date = timezone.now()

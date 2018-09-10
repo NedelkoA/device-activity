@@ -8,6 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 
 from .models import Invite, Company
 from .tasks import send_invite_email
+from .filters import ActivityFilter
 from accounts.models import Profile
 from associate.models import Activity, Device
 
@@ -76,9 +77,6 @@ class InfoCompanyView(LoginRequiredMixin, DetailView):
         return context
 
 
-# Сортирует каждый queryset, но иначе не смог вывести на странице активити
-
-
 class PersonActivityView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'company_manager/person_activity.html'
@@ -87,9 +85,7 @@ class PersonActivityView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = self.get_object()
-        devices = Device.objects.filter(user=profile.user, is_active=True)
-        context['activities'] = [
-            Activity.objects.filter(device=device).order_by('-start')
-            for device in devices
-        ]
+        devices = Device.objects.filter(user=profile.user, is_active=True).values_list('id', flat=True)
+        activities = Activity.objects.filter(device_id__in=devices).order_by('-start')
+        context['filter'] = ActivityFilter(self.request.GET, queryset=activities)
         return context

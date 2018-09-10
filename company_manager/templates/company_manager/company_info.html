@@ -6,6 +6,7 @@
 </head>
 <body>
     {% for person in associate %}
+        {{ person.id }}
         {% if person.user.is_staff == False %}
             <a href="{% url 'person_activity' person.id %}">{{ person }}</a>
         {% endif %}
