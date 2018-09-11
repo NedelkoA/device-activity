@@ -12,6 +12,7 @@
         </form>
     </div>
     <p>{{ object.user.username }} activities</p>
+    <p>Средння длительность активностей данного пользователя: {{ duration }}</p>
     <div class="activities">
         {% for obj in filter.qs %}
             {{ obj.start }} {{ obj.device.name }}<br>
