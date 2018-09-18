@@ -1,22 +1,25 @@
-from django.shortcuts import reverse, get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseNotFound
+from django.shortcuts import reverse
 from django.views.generic import ListView, UpdateView
 from django.views.generic.edit import FormMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Device, Activity
 from .forms import DeleteForm
+from .models import Activity, Device
 
 
-class DeviceView(LoginRequiredMixin, ListView, FormMixin):
+class UserRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            return HttpResponseNotFound('Page not found')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DeviceView(LoginRequiredMixin, UserRequiredMixin, ListView, FormMixin):
     model = Device
     template_name = 'associate/devices.html'
     form_class = DeleteForm
     login_url = 'login'
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_staff:
-            return redirect(reverse('profile'))
-        return super().get(request, args, kwargs)
 
     def get_queryset(self):
         return Device.objects.filter(
@@ -30,17 +33,7 @@ class DeleteDeviceView(LoginRequiredMixin, UpdateView):
     form_class = DeleteForm
     template_name = 'associate/devices.html'
     login_url = 'login'
-
-    def get(self, request, *args, **kwargs):
-        device = get_object_or_404(Device, pk=kwargs['pk'])
-        if request.user == device.user and not request.user.is_staff:
-            return super().get(request, args, kwargs)
-        elif request.user.is_staff:
-            return redirect(reverse(
-                'company_info',
-                kwargs={'pk': request.user.profile.company.id}
-            ))
-        return redirect(reverse('devices'))
+    http_method_names = ['post']
 
     def form_valid(self, form):
         device = Device.objects.get(id=self.kwargs['pk'])
@@ -52,21 +45,10 @@ class DeleteDeviceView(LoginRequiredMixin, UpdateView):
         return reverse('devices')
 
 
-class ActivitiesView(LoginRequiredMixin, ListView):
+class ActivitiesView(LoginRequiredMixin, UserRequiredMixin, ListView):
     model = Activity
     template_name = 'associate/activities.html'
     login_url = 'login'
-
-    def get(self, request, *args, **kwargs):
-        device = get_object_or_404(Device, pk=kwargs['pk'])
-        if request.user == device.user and not request.user.is_staff:
-            return super().get(request, args, kwargs)
-        elif request.user.is_staff:
-            return redirect(reverse(
-                'company_info',
-                kwargs={'pk': request.user.profile.company.id}
-            ))
-        return redirect(reverse('devices'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

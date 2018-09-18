@@ -9,7 +9,7 @@ from django.db.models import Avg, ExpressionWrapper, F, fields, Count
 
 from .models import Invite, Company
 from .tasks import send_invite_email
-from .filters import ActivityFilter
+# from .filters import ActivityFilter
 from accounts.models import Profile
 from associate.models import Activity, Device
 
@@ -88,7 +88,7 @@ class PersonActivityView(LoginRequiredMixin, DetailView):
         profile = self.get_object()
         devices = Device.objects.filter(user=profile.user, is_active=True).values_list('id', flat=True)
         activities = Activity.objects.filter(device_id__in=devices).order_by('-start')
-        context['filter'] = ActivityFilter(self.request.GET, queryset=activities)
+        # context['filter'] = ActivityFilter(self.request.GET, queryset=activities)
         expr_duration = ExpressionWrapper(F('end') - F('start'), output_field=fields.DurationField())
         each_durations = Activity.objects.annotate(duration=expr_duration)
         context['duration'] = each_durations.aggregate(Avg('duration'))['duration__avg']

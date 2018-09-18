@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'rest_framework.authtoken',
     'django_filters',
-    'debug_toolbar',
+    # 'debug_toolbar',
 
     'associate',
     'accounts',
@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'device_activity.urls'
@@ -141,7 +141,7 @@ CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025 # python3 -m smtpd -n -c DebuggingServer localhost:1025
+EMAIL_PORT = 1025  # python3 -m smtpd -n -c DebuggingServer localhost:1025
 
 # Rest framework token auth
 
