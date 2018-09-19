@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from ..models import Device, Activity
 
 
@@ -23,6 +24,10 @@ class ActivitySerializer(serializers.ModelSerializer):
         queryset=Device.objects.all(),
         write_only=True
     )
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+        write_only=True
+    )
 
     class Meta:
         model = Activity
@@ -33,4 +38,5 @@ class ActivitySerializer(serializers.ModelSerializer):
             'created_at',
             'name',
             'device',
+            'user',
         )

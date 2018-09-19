@@ -5,13 +5,14 @@ from django.shortcuts import redirect, reverse
 from django.views.generic import CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models import Avg, ExpressionWrapper, F, fields, Count
+from django.db.models import Count
 
 from .models import Invite, Company
 from .tasks import send_invite_email
-# from .filters import ActivityFilter
+from .filters import ActivityFilter
 from accounts.models import Profile
 from associate.models import Activity, Device
+from .utils.person_info import average_duration_activity
 
 
 class InviteView(LoginRequiredMixin, CreateView):
@@ -86,11 +87,14 @@ class PersonActivityView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = self.get_object()
-        devices = Device.objects.filter(user=profile.user, is_active=True).values_list('id', flat=True)
-        activities = Activity.objects.filter(device_id__in=devices).order_by('-start')
-        # context['filter'] = ActivityFilter(self.request.GET, queryset=activities)
-        expr_duration = ExpressionWrapper(F('end') - F('start'), output_field=fields.DurationField())
-        each_durations = Activity.objects.annotate(duration=expr_duration)
-        context['duration'] = each_durations.aggregate(Avg('duration'))['duration__avg']
+        devices = Device.objects.filter(user=profile.user, is_active=True)
+        activities = Activity.objects.filter(user=profile.user).order_by('-start')
+        context['filter'] = ActivityFilter(self.request.GET, queryset=activities, user=profile.user)
+        context['duration'] = average_duration_activity()
         context['devices'] = devices.aggregate(Count('id'))['id__count']
+        if 'device_id' in self.request.GET and self.request.GET['device_id'] != '':
+            context['last_sync'] = Device.objects.get(id=self.request.GET.get('device_id')).last_synchronization
+        else:
+            # реализовать синхронизацию пользователя
+            pass
         return context

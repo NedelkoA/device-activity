@@ -14,9 +14,14 @@
     <p>{{ object.user.username }} activities</p>
     <p>Общее количество устройств: {{ devices }}</p>
     <p>Средння длительность активностей данного пользователя: {{ duration }}</p>
+    {% if last_sync %}
+        <p>Последняя синхронизация устройства: {{ last_sync }}</p>
+    {% else %}
+        <p>Последняя синхронизация юзера: </p>
+    {% endif %}
     <div class="activities">
         {% for obj in filter.qs %}
-            {{ obj.start }} {{ obj.device.name }}<br>
+            {{ obj.start }} {{ obj.device.name }} {{ obj.device.last_synchronization }}<br>
         {% endfor %}
     </div>
 </body>

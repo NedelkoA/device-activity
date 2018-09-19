@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
@@ -23,5 +24,10 @@ class GetActivitiesView(viewsets.GenericViewSet,
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
+        request.data['user'] = self.request.user.id
         create.delay(request.data)
+        if 'device' in request.data:
+            device = Device.objects.get(id=request.data['device'])
+            device.last_synchronization = timezone.now()
+            device.save()
         return Response('Successfully', status=status.HTTP_201_CREATED)

@@ -20,6 +20,12 @@ class Device(models.Model):
     is_active = models.BooleanField(
         default=True,
     )
+    last_synchronization = models.DateTimeField(
+        null=True
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class Activity(models.Model):
@@ -35,4 +41,10 @@ class Activity(models.Model):
         Device,
         on_delete=models.CASCADE,
         related_name='activity'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='activity',
+        null=True
     )
