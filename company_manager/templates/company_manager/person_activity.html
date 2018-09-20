@@ -17,7 +17,7 @@
     {% if last_sync %}
         <p>Последняя синхронизация устройства: {{ last_sync }}</p>
     {% else %}
-        <p>Последняя синхронизация юзера: </p>
+        <p>Последняя синхронизация юзера: {{ last_sync_user }}</p>
     {% endif %}
     <div class="activities">
         {% for obj in filter.qs %}

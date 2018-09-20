@@ -94,7 +94,5 @@ class PersonActivityView(LoginRequiredMixin, DetailView):
         context['devices'] = devices.aggregate(Count('id'))['id__count']
         if 'device_id' in self.request.GET and self.request.GET['device_id'] != '':
             context['last_sync'] = Device.objects.get(id=self.request.GET.get('device_id')).last_synchronization
-        else:
-            # реализовать синхронизацию пользователя
-            pass
+        context['last_sync_user'] = profile.last_synchronization
         return context

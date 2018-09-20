@@ -27,7 +27,11 @@ class GetActivitiesView(viewsets.GenericViewSet,
         request.data['user'] = self.request.user.id
         create.delay(request.data)
         if 'device' in request.data:
+            now = timezone.now()
             device = Device.objects.get(id=request.data['device'])
-            device.last_synchronization = timezone.now()
+            device.last_synchronization = now
             device.save()
+            user = self.request.user.profile
+            user.last_synchronization = now
+            user.save()
         return Response('Successfully', status=status.HTTP_201_CREATED)

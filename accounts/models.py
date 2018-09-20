@@ -19,7 +19,9 @@ class Profile(models.Model):
         null=True,
         related_name='company'
     )
-    last_synchronization = models.DateTimeField()
+    last_synchronization = models.DateTimeField(
+        null=True
+    )
 
     def __str__(self):
         return self.user.username
