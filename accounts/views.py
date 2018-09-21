@@ -41,9 +41,8 @@ class RegistrationView(CreateView):
             if invite.is_used():
                 return redirect(reverse('registration'))
             form.instance.email = invite.token.email
-            # не сохраняет компанию в профайле юзера
-            # obj.profile.company = invite.token.invite_creator.profile.company
-            # obj.save()
+            obj.profile.company = invite.token.invite_creator.profile.company
+            obj.profile.save()
             invite.token.invited = obj
             invite.token.save()
         else:

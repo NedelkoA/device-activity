@@ -1,37 +1,33 @@
-from django.utils import timezone
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from rest_framework import viewsets, permissions
 
 from .serializers import DeviceSerializer, ActivitySerializer
 from ..models import Device, Activity
 from ..tasks import create
 
 
-class AddDeviceView(viewsets.GenericViewSet,
-                    viewsets.mixins.CreateModelMixin):
+class AddDeviceView(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ['post']
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
 
 
-class GetActivitiesView(viewsets.GenericViewSet,
-                        viewsets.mixins.CreateModelMixin):
+class GetActivitiesView(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
     permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):
-        request.data['user'] = self.request.user.id
         create.delay(request.data)
         if 'device' in request.data:
-            now = timezone.now()
             device = Device.objects.get(id=request.data['device'])
-            device.last_synchronization = now
+            device.update_last_synchronization()
             device.save()
             user = self.request.user.profile
-            user.last_synchronization = now
+            user.update_last_synchronization()
             user.save()
-        return Response('Successfully', status=status.HTTP_201_CREATED)
+        return super().create(request, args, kwargs)

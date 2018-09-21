@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Device(models.Model):
@@ -23,6 +24,9 @@ class Device(models.Model):
     last_synchronization = models.DateTimeField(
         null=True
     )
+
+    def update_last_synchronization(self):
+        self.last_synchronization = timezone.now()
 
     def __str__(self):
         return self.name

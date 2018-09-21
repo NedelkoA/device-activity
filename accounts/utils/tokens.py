@@ -1,4 +1,5 @@
 from datetime import timedelta
+from uuid import uuid4
 
 from django.conf import settings
 from django.utils import timezone
@@ -24,7 +25,12 @@ class UserToken:
 
     @classmethod
     def check_instance(cls, request):
-        token = Invite.objects.filter(invite_token=request.GET.get('token'))
+        token = Invite.objects.filter(invite_token=request.GET.get('token', None))
         if token:
             return cls(token[0])
         return None
+
+    @classmethod
+    def create_token(cls):
+        invite_token = uuid4()
+        return str(invite_token).replace('-', '')

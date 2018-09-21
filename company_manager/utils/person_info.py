@@ -3,9 +3,9 @@ from django.db.models import Avg, ExpressionWrapper, F, fields
 from associate.models import Activity
 
 
-def average_duration_activity():
+def average_duration_activity(user):
     expr_duration = ExpressionWrapper(F('end') - F('start'), output_field=fields.DurationField())
-    each_durations = Activity.objects.annotate(duration=expr_duration)
+    each_durations = Activity.objects.filter(user=user).annotate(duration=expr_duration)
     return each_durations.aggregate(Avg('duration'))['duration__avg']
 
 

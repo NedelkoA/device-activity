@@ -21,7 +21,7 @@
     {% endif %}
     <div class="activities">
         {% for obj in filter.qs %}
-            {{ obj.start }} {{ obj.device.name }} {{ obj.device.last_synchronization }}<br>
+            {{ obj.start }} {{ obj.device.name }}<br>
         {% endfor %}
     </div>
 </body>
